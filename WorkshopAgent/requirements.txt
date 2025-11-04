@@ -1,3 +1,6 @@
 google-adk==1.16.0
 google-cloud-aiplatform==1.124.0
 google-genai==1.47.0
+google-auth
+google-auth-oauthlib
+requests
