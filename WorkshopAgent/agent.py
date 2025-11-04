@@ -1,5 +1,12 @@
+import os
+
+import google.auth
+import google.auth.transport.requests
 from google.adk import Agent
-from google.adk.tools import ToolContext
+from google.adk.tools import ToolContext, MCPToolset
+from google.adk.tools.mcp_tool import StreamableHTTPConnectionParams
+
+from WorkshopAgent.utils import get_gcloud_access_token
 
 
 def get_weather_in_city(city: str, tool_context: ToolContext):
@@ -11,7 +18,7 @@ def get_weather_in_city(city: str, tool_context: ToolContext):
         "message": f"Cloudy and 15 degrees Celcius in {city}"
     }
 
-
+url = os.environ["MCP_URL"]
 root_agent = Agent(
     model="gemini-2.5-flash",
     name="WeatherAgent",
@@ -22,6 +29,10 @@ root_agent = Agent(
     before_agent_callback=[],
     after_agent_callback=[],
     sub_agents=[],
-    tools=[get_weather_in_city],
+    tools=[get_weather_in_city, MCPToolset(
+        connection_params=StreamableHTTPConnectionParams(
+            url=url,
+            headers={"Authorization": f"Bearer {get_gcloud_access_token()}"})
+    )],
 
 )
