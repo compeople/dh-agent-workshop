@@ -60,4 +60,4 @@ def get_system_errors(system_name: str, limit: int = 5) -> list[dict]:
 
 
 if __name__ == "__main__":
-    mcp.run(transport="http", port=8080)
+    mcp.run(transport="http", host="0.0.0.0", port=8080)
