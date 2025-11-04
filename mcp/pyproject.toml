@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "mcp-tests"
+version = "0.1.0"
+description = "Tests and experiments for Model Context Protocol (MCP) implementations"
+authors = ["Christian-Ley_cpdev <christian.ley@compeople.de>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.11,<4.0"
+fastmcp = "^2.12.3"
+gunicorn = "^23.0.0"
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
