@@ -23,7 +23,7 @@ source .venv/bin/activate
 install dependencies using
 
 ```
-pip install -r WeatherAgent/requirements.txt
+pip install -r WorkshopAgent/requirements.txt
 ```
 
 ### Environment variables
@@ -33,7 +33,7 @@ Before running the project, create an .env file inside the app directory.
 From the root directory, run the following command to create the file:
 
 ```bash
-cd src && cat <<EOF > .env
+cat <<EOF > .env
 GOOGLE_CLOUD_PROJECT={google_cloud_project}
 GOOGLE_GENAI_USE_VERTEXAI=true
 GOOGLE_CLOUD_LOCATION={location}
