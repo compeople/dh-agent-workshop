@@ -3,6 +3,9 @@ This repo contains an example ADK Agent with deployment script and additionally 
 # ADK Example
 ## Set up
 
+It is required to have the Google Cloud CLI installed on your machine.
+You can find a guide to install it here: https://docs.cloud.google.com/sdk/docs/install
+
 ### Create and activate your virtual environment
 
 It is recommended to use **Python 3.12** to create your virtual environment.
