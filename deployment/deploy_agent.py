@@ -7,8 +7,17 @@ import subprocess
 import requests
 import vertexai
 from vertexai import agent_engines
+from pathlib import Path
 
+import sys
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
 from WorkshopAgent.agent import root_agent
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Add the parent directory to the path so WorkshopAgent can be imported
 
 logger = logging.getLogger(__name__)
 
