@@ -156,6 +156,12 @@ If that is the case, locate the freshly created bucket, its name should be like 
 > gcloud storage buckets add-iam-policy-binding gs://run-sources-{project_id}-{region} \
 >    --member='serviceAccount:{project_number}-compute@developer.gserviceaccount.com' \
 >    --role='roles/storage.objectViewer'
+>
+>  gcloud artifacts repositories add-iam-policy-binding cloud-run-source-deploy \
+>    --location={region} \
+>    --member='serviceAccount:{project_number}-compute@developer.gserviceaccount.com' \
+>    --role='roles/artifactregistry.writer' \
+>    --project={project_id}
 > ```
 
 Add the url to the MCP Server to your .env file. Be aware of the /mcp at the end of the url.
