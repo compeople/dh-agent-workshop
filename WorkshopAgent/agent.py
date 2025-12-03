@@ -1,38 +1,70 @@
+import asyncio
 import os
 
-import google.auth
-import google.auth.transport.requests
+import nest_asyncio
+from dotenv import load_dotenv
 from google.adk import Agent
-from google.adk.tools import ToolContext, MCPToolset
-from google.adk.tools.mcp_tool import StreamableHTTPConnectionParams
+from google.adk.tools import AgentTool
+# from google.adk.tools import VertexAiSearchTool, AgentTool
+from google.adk.tools.mcp_tool import StreamableHTTPConnectionParams, McpToolset, MCPToolset
+from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerParams, SseConnectionParams
 
-from WorkshopAgent.utils import get_gcloud_access_token
+from WorkshopAgent.subagents.search_agent import search_agent
+
+load_dotenv()
 
 
-def get_weather_in_city(city: str, tool_context: ToolContext):
-    if city.lower() == 'berlin' or city.lower() == 'bn':
-        return {"status": "success",
-                "message": "it's nice and sunny in Berlin, 38 degrees Celcius."}
-    return {
-        "status": "success",
-        "message": f"Cloudy and 15 degrees Celcius in {city}"
-    }
-
-url = os.environ["MCP_URL"]
-root_agent = Agent(
-    model="gemini-2.5-flash",
-    name="WeatherAgent",
-    description="Agent to get weather information",
-    instruction="You are an helpful, friendly assistant and help the user to get information about the weather in different cities.",
-    before_model_callback=[],
-    after_model_callback=[],
-    before_agent_callback=[],
-    after_agent_callback=[],
-    sub_agents=[],
-    tools=[get_weather_in_city, MCPToolset(
-        connection_params=StreamableHTTPConnectionParams(
+def get_mcp_tools() -> McpToolset:
+    url = os.environ["MCP_URL"]
+    print({'MCP': url})
+    return McpToolset(
+        connection_params=StreamableHTTPServerParams(
             url=url,
-            headers={"Authorization": f"Bearer {get_gcloud_access_token()}"})
-    )],
+        ),
+        # this is needed according to here https://github.com/google/adk-python/issues/1024#issuecomment-2943058567
+        errlog=None
+    )
 
-)
+
+project_id = os.environ['GOOGLE_CLOUD_PROJECT']
+datastore_id = os.environ['DATASTORE_ID']
+datastore_location = f"projects/{project_id}/locations/eu/collections/default_collection/dataStores/{datastore_id}"
+
+
+def get_weather(city: str):
+    """"
+    get the weather of a provided city
+    """
+    if city == "Leipzig":
+        return "25 degrees celcius and sunny"
+    else:
+        return "12 degrees ceclius and rainy"
+
+
+async def setup_agent():
+    tools = []
+    mcp_tools = get_mcp_tools()
+
+    tools.append(AgentTool(agent=search_agent))
+    tools.append(mcp_tools)
+
+    return Agent(
+        model="gemini-2.5-flash",
+        name="ITAgent",
+        description="Agent to troubleshoot different IT systems.",
+        instruction=(
+            "You are a helpful and friendly assistant. Whenever a user asks about troubleshooting, error messages, or IT problems, you must use the TroubleshootingAgent tool to answer the request. "
+            "The TroubleshootingAgent tool is specialized in searching the knowledge base for manuals, guides, and troubleshooting tips. "
+            "Always use the TroubleshootingAgent tool for any queries related to errors, issues, or troubleshooting in IT systems. "
+            "Never answer troubleshooting questions yourself; always use the TroubleshootingAgent tool."
+        ),
+        before_model_callback=[],
+        after_model_callback=[],
+        before_agent_callback=[],
+        after_agent_callback=[],
+        sub_agents=[],
+        tools=tools,
+        )
+
+nest_asyncio.apply()
+root_agent = asyncio.run(setup_agent())

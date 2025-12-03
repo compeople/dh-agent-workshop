@@ -92,8 +92,7 @@ def deploy_agent():
         location=location,
         staging_bucket=staging_bucket,
     )
-
-
+    os_keys = ["DATASTORE_ID", "MCP_URL"]
     if not reasoning_engine:
         # deploy to agent engine
         logger.info("Deploying to Agent Engine...")
@@ -103,6 +102,7 @@ def deploy_agent():
             extra_packages=["WorkshopAgent"],
             display_name=agent_name,
             description=agent_description,
+            env_vars=os_keys,
         )
         reasoning_engine = remote_app.gca_resource.name
 
@@ -120,10 +120,11 @@ def deploy_agent():
         agent_engines.update(
             resource_name=reasoning_engine,
             agent_engine=root_agent,  # type: ignore
-            requirements="requirements.txt",
+            requirements="WorkshopAgent/requirements.txt",
             extra_packages=["WorkshopAgent"],
             display_name=agent_name,
             description=agent_description,
+            env_vars=os_keys,
         )
 
 

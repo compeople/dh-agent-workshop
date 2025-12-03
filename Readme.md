@@ -66,19 +66,19 @@ adk web
 There is a deployment script to deploy to AgentEngine in deployment/
 
 ### Creating a new Agent in Agent Engine
-To create a new Agent in AgentEngine, make sure you have **NOT** set the REASONING_AGENT variable in your environment.
+To create a new Agent in AgentEngine, make sure you have **NOT** set the REASONING_ENGINE variable in your environment.
 If you want to register the created Agent to Gemini Enterprise, make sure you set the GEMINI_ENTERPRISE_APP_ID. 
 Then simply run the deployment/deploy_agent.py from your root directory.
 ```bash
 python deployment/deploy_agent.py
 ```
-The script shows the created reasoning agent as output, store the value in the REASONING_AGENT env variable. 
+The script shows the created reasoning agent as output, store the value in the REASONING_ENGINE env variable. 
 When you now run the deployment script it will update the existing agent instead of creating a new one.
 
 ### Update an existing Agent
-Make sure you set the REASONING_AGENT env var with the value of your reasoning engine:
+Make sure you set the REASONING_ENGINE env var with the value of your reasoning engine:
 ```bash
-export REASONING_AGENT="projects/{project_id}/locations/{location}/reasoningEngines/{agent_id}"
+export REASONING_ENGINE="projects/{project_id}/locations/{location}/reasoningEngines/{agent_id}"
 ```
 or better add it to your .env file.
 
@@ -110,5 +110,5 @@ python main.py
 ## Deployment
 The MCP Server can be deployed to cloud run, using
 ```bash
-gcloud run deploy mcp-server --no-allow-unauthenticated --region={region} --source .
+gcloud run deploy mcp-server --allow-unauthenticated --region={region} --source .
 ```
