@@ -16,9 +16,17 @@ Furthermore, it contains a simple MCP Server, written with FastMCP, which will b
    1. [Prerequisites](#prerequisites)
    2. [Gemini Enterprise](#gemini-enterprise)
    3. [Create the Agent Data Store](#create-the-agent-data-store)
+      1. [Google Cloud Bucket](#google-cloud-bucket)
+      2. [Agent Data Store](#agent-data-store)
    4. [Deploy the MCP Server](#deploy-the-mcp-server)
    5. [Test Agent locally](#test-agent-locally)
+      1. [Create and activate your virtual environment](#create-and-activate-your-virtual-environment)
+      2. [Prerequisites](#prerequisites-1)
+      3. [Local Testing](#local-testing)
    6. [Deploy Agent](#deploy-agent)
+      1. [Creating a new Agent in Agent Engine](#creating-a-new-agent-in-agent-engine)
+      2. [Update an existing Agent](#update-an-existing-agent)
+      3. [Try out the Agent](#try-out-the-agent)
 
 # Structure
 This Readme guides you through the Deployment of this Agent-system to Gemini Enterprise.
