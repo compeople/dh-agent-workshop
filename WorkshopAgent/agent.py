@@ -31,16 +31,6 @@ datastore_id = os.environ['DATASTORE_ID']
 datastore_location = f"projects/{project_id}/locations/eu/collections/default_collection/dataStores/{datastore_id}"
 
 
-def get_weather(city: str):
-    """"
-    get the weather of a provided city
-    """
-    if city == "Leipzig":
-        return "25 degrees celcius and sunny"
-    else:
-        return "12 degrees ceclius and rainy"
-
-
 async def setup_agent():
     tools = []
     mcp_tools = get_mcp_tools()
