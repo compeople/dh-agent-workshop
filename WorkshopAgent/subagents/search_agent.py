@@ -4,19 +4,14 @@ from dotenv import load_dotenv
 from google.adk import Agent
 from google.adk.tools import MCPToolset
 from google.adk.tools import VertexAiSearchTool
-from google.adk.tools.mcp_tool import StreamableHTTPConnectionParams
-
-from WorkshopAgent.utils import get_gcloud_access_token
 
 load_dotenv()
-
 
 project_id = os.environ['GOOGLE_CLOUD_PROJECT']
 datastore_id = os.environ['DATASTORE_ID']
 DATASTORE_PATH = f"projects/{project_id}/locations/eu/collections/default_collection/dataStores/{datastore_id}"
 
 vertex_search_tool = VertexAiSearchTool(data_store_id=DATASTORE_PATH, bypass_multi_tools_limit=True)
-
 
 search_agent = Agent(
     model="gemini-2.5-flash",

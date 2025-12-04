@@ -5,9 +5,8 @@ import nest_asyncio
 from dotenv import load_dotenv
 from google.adk import Agent
 from google.adk.tools import AgentTool
-# from google.adk.tools import VertexAiSearchTool, AgentTool
-from google.adk.tools.mcp_tool import StreamableHTTPConnectionParams, McpToolset, MCPToolset
-from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerParams, SseConnectionParams
+from google.adk.tools.mcp_tool import McpToolset
+from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerParams
 
 from WorkshopAgent.subagents.search_agent import search_agent
 
@@ -54,7 +53,8 @@ async def setup_agent():
         after_agent_callback=[],
         sub_agents=[],
         tools=tools,
-        )
+    )
+
 
 nest_asyncio.apply()
 root_agent = asyncio.run(setup_agent())
