@@ -1,13 +1,13 @@
 # Overview
-This repo contains a tutorial on how to setup an agent in ADK.
+This repo contains a tutorial on how to set up an agent in ADK.
 The goal of the agent is to troubleshoot IT systems.
 It will gather information about the health status of IT systems and find corresponding solutions based on IT manuals.
 The goal of the tutorial is to give basic understanding on how to:
-- develop an multi agent system using Google Agent Development Kit (ADK),
+- develop a multi-agent system using Google Agent Development Kit (ADK),
 - connect to a remote MCP Server and use its tools,
 - use standard tools in ADK, to connect to Vertex AI Search for document retrieval,
-- deploy the multi agent system to Gemini Enterprise.
-Furthermore it contains a simple MCP Server, written with FastMCP, which will be deployed to Google Cloud Run.
+- deploy the multi-agent system to Gemini Enterprise.
+Furthermore, it contains a simple MCP Server, written with FastMCP, which will be deployed to Google Cloud Run.
 
 # Table of Contents
 1. Overview
@@ -15,10 +15,10 @@ Furthermore it contains a simple MCP Server, written with FastMCP, which will be
 3. Deployment
    1. Prerequisites
    2. Gemini Enterprise
-   2. Create the Agent Data Store
-   3. Deploy the MCP Server
-   1. Test Agent locally
-   5. Deploy Agent
+   3. Create the Agent Data Store
+   4. Deploy the MCP Server
+   5. Test Agent locally
+   6. Deploy Agent
 
 
 # Deployment
@@ -28,14 +28,18 @@ You can find a guide to install it here: https://docs.cloud.google.com/sdk/docs/
 
 Before running the project, create an .env file inside the root directory of this project.
 From the root directory, run the following command to create the file:
+> ‼️variables are marked with this format: {i_am_variable}, make sure to replace it with the actual value. Replace the whole string, including the brackets.
+> 
 ```bash
 cat <<EOF > .env
 GOOGLE_CLOUD_PROJECT={google_cloud_project}
 GOOGLE_GENAI_USE_VERTEXAI=true
-GOOGLE_CLOUD_LOCATION={location}
+GOOGLE_CLOUD_LOCATION=europe-west1
 EOF
 ```
 To make the environment variables accessible in your current terminal window, run the following command.
+If you like to use another location for this project, make sure Gemini Enterprise does support this.
+At the moment only **europe-west1** and **us-central1** are supported (as seen [here](https://docs.cloud.google.com/gemini/enterprise/docs/register-and-manage-an-adk-agent#reasoning-engine-location)).
 ```bash
 source .env
 ```
@@ -49,7 +53,7 @@ To activate Gemini Enterprise and create a Gemini Enterprise App, follow the fir
 **DO NOT** create the Data Store at this moment.
 After you created the Gemini Enterprise App, store the **ID** of the App in your environment file.
 You will find the App ID in the "Apps" Overview in Gemini Enterprise
-![image](docs/resources/GE_App_ID.png)
+![image](docs/resources/GE_App_Id.png)
 
 ```bash
 cat <<EOF >> .env
@@ -77,13 +81,13 @@ After the bucket is created and the files are uploaded, the next step is to crea
 A Data Store can be used to search through the content of the files.
 Therefore, go back to Gemini Enterprise, into the App you created previously.
 On the left pane, click on "Connected data stores" -> "New datastore".
-In the opening window, you see all the connectors which can be used with Gemini Enterpise.
+In the opening window, you see all the connectors which can be used with Gemini Enterprise.
 Search for "Cloud Storage"
 ![image](docs/resources/GE_datastore_create.png)
-Select "Unstructured Data" as Specalized Data Import and "Periodic" as Synchronization frequency.
-When you chose "Periodic", you can manually rerun the import if anything fails or you want to add other files to the datastore later.
+Select "Unstructured Data" as Specialized Data Import and "Periodic" as Synchronization frequency.
+When you chose "Periodic", you can manually rerun the import if anything fails, or you want to add other files to the datastore later.
 If you chose "One time", it will only run one time and it is not possible to restart the indexing.
-For Sync frequency you can chose the lowest frequency possible, "Every 5 days".
+For Sync frequency you can choose the lowest frequency possible, "Every 5 days".
 Also make sure to select the bucket, which was created perviously.
 ![image](docs/resources/GE_datastore_create_2.png)
 Then click on "Continue".
@@ -110,7 +114,7 @@ It ends, with _gcs_store
 ![image](docs/resources/GE_datastore_gcs_store_id.png)
 ```bash
 cat <<EOF >> .env
-DATASTORE_ID={datasotre_id}
+DATASTORE_ID={datastore_id}
 EOF
 ```
 
@@ -132,28 +136,37 @@ In the output you see the currently configured project, if it is not the one you
 gcloud config set project {google_cloud_project_id}
 ```
 
-Before deploying, some roles need to be set to the default compute service account.
+To deploy the MCP Server, Google Cloud build will be used.
+Cloud build will store the artifacts of the built containers in a bucket.
+At first this bucket needs to be created.
+It must be named "{project_id}_cloudbuild".
 ```bash
-gcloud projects add-iam-policy-binding gct-dh-test-workshop \
-    --member='serviceAccount:{project_number}-compute@developer.gserviceaccount.com' \
-    --role='roles/logging.logWriter'
+gcloud storage buckets create gs://{project_id}_cloudbuild --location=europe-west4
 ```
-
-To deploy the MCP Server, Google Cloud build is used.
+The next step trigger a build using cloud build.
+The first time the command is run, it may fail, but it should create some necessities, like the default compute service account.
+If the commands fail, follow the description below and rerun the deployment. 
 ```bash
 cd mcp
 gcloud run deploy mcp-server --allow-unauthenticated --region=europe-west4 --source .
 ```
-You can chose another region, if you prefer.
+You can choose another region, if you prefer.
 This will create a new instance of the mcp server in Cloud Run.
-If the command, asks to enable APIs, you can prompt Y to enable those.
+If the command, asks to enable APIs or set permissions, prompt Y.
+You may be asked multiple things, confirm everything by prompting Y.
 
 >⚠️ The command may fail, due to access restrictions.
 > The most common issue is, that it created a new bucket but the default service account is missing permission.
 If that is the case, locate the freshly created bucket, its name should be like this. "run-sources-{project_id}-{region}".
 > You can now set the permissions, via Cloud Console or using the following command:
+> Before deploying, some roles need to be set to the default compute service account.
 > ```bash
-> gcloud storage buckets add-iam-policy-binding gs://run-sources-{project_id}-{region} \
+> gcloud projects add-iam-policy-binding {project_id} \
+>    --member='serviceAccount:{project_number}-compute@developer.gserviceaccount.com' \
+>    --role='roles/logging.logWriter'
+> ```
+> ```bash
+> gcloud storage buckets add-iam-policy-binding gs://{project_id}_cloudbuild \
 >    --member='serviceAccount:{project_number}-compute@developer.gserviceaccount.com' \
 >    --role='roles/storage.objectViewer'
 >
@@ -207,7 +220,7 @@ adk web
 ```
 Open the url from the output of the command in your browser.
 It should be localhost:8000/ or similar.
-In the upper left corner of the application, you can chose which agent to use, chose "WorkshopAgent".
+In the upper left corner of the application, you can choose which agent to use, chose "WorkshopAgent".
 ![image](docs/resources/ADK_agent_choser.png)
 
 You should now be able to chat with the agent.
