@@ -8,6 +8,9 @@ from google.adk.tools.mcp_tool import StreamableHTTPConnectionParams
 
 from WorkshopAgent.utils import get_gcloud_access_token
 
+load_dotenv()
+
+
 project_id = os.environ['GOOGLE_CLOUD_PROJECT']
 datastore_id = os.environ['DATASTORE_ID']
 DATASTORE_PATH = f"projects/{project_id}/locations/eu/collections/default_collection/dataStores/{datastore_id}"
