@@ -10,15 +10,39 @@ The goal of the tutorial is to give basic understanding on how to:
 Furthermore, it contains a simple MCP Server, written with FastMCP, which will be deployed to Google Cloud Run.
 
 # Table of Contents
-1. Overview
-2. Table of Contents
-3. Deployment
-   1. Prerequisites
-   2. Gemini Enterprise
-   3. Create the Agent Data Store
-   4. Deploy the MCP Server
-   5. Test Agent locally
-   6. Deploy Agent
+1. [Overview](#overview)
+2. [Table of Contents](#table-of-contents)
+3. [Deployment](#deployment)
+   1. [Prerequisites](#prerequisites)
+   2. [Gemini Enterprise](#gemini-enterprise)
+   3. [Create the Agent Data Store](#create-the-agent-data-store)
+   4. [Deploy the MCP Server](#deploy-the-mcp-server)
+   5. [Test Agent locally](#test-agent-locally)
+   6. [Deploy Agent](#deploy-agent)
+
+# Structure
+This Readme guides you through the Deployment of this Agent-system to Gemini Enterprise.
+For a technical understanding please have a look at the code.
+The repo is structured as follows:
+
+```
+├── deployment/
+├── docs/
+│   └── resources/
+├── documents/
+│   └── it_manuals/
+├── mcp/
+└── WorkshopAgent/
+    └── subagents/
+```
+
+*   **`deployment/`**: Scripts for deploying to Agent Engine and Gemini Enterprise.
+*   **`docs/resources/`**: Images used in the documentation.
+*   **`documents/it_manuals/`**: Manuals used by the agent, which will be uploaded to a GCS Bucket.
+*   **`mcp/`**: An example MCP Server implementation (using FastMCP) that will be hosted in Cloud Run.
+*   **`WorkshopAgent/`**: The agent implementation.
+    *   [`agent.py`](WorkshopAgent/agent.py): The root agent for orchestration and MCP server connection.
+    *   [`subagents/search_agent.py`](WorkshopAgent/subagents/search_agent.py): The search agent that connects to the uploaded documents to answer questions.
 
 
 # Deployment
@@ -121,6 +145,9 @@ EOF
 ## Deploy the MCP Server
 As the agent is connecting to a MCP Server, the next step is to create the MCP Server.
 There is one very basic example in the `` mcp/ `` folder in this repository.
+In the following you will deploy this MCP Server to Cloud Run, to use it from the Agent.
+For this tutorial the MCP Server does not require authorization.
+In a real world scenario the server should be secured.
 
 Make sure, that you are logged in.
 ```bash
